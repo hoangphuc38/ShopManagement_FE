@@ -1,8 +1,40 @@
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import publicRoutes from "./routes";
+
 function App() {
   return (
-    <div>
-      <h1 className="text-3xl font-bold">Home Screen</h1>
-    </div>
+    <Router>
+      <Routes>
+        {publicRoutes.map((route, index) => {
+          const Layout = route.layout;
+          const Page = route.component;
+
+          if (route.path === '/') {
+            return (
+              <Route
+                key={index}
+                path={route.path}
+                element={
+                  <Navigate to="/product" />
+                }
+              />
+            )
+          }
+
+          return (
+            <Route 
+              key={index}
+              path={route.path}
+              element={
+                <Layout>
+                  <Page />
+                </Layout>
+              }
+            />
+          )
+        })}
+      </Routes>
+    </Router>
   );
 }
 
