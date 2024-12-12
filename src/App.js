@@ -15,14 +15,14 @@ function App() {
                 key={index}
                 path={route.path}
                 element={
-                  <Navigate to="/product" />
+                  <Navigate to="/login" />
                 }
               />
             )
           }
 
           return (
-            <Route 
+            <Route
               key={index}
               path={route.path}
               element={

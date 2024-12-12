@@ -1,6 +1,8 @@
 function UserScreen() {
     return (
-        <div>UserScreen</div>
+        <div className="container mx-auto p-4">
+            UserScreen
+        </div>
     )
 }
 

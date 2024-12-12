@@ -1,5 +1,6 @@
 const routes = {
     login: '/login',
+    signup: '/signup',
     product: '/product',
     addProduct: '/product/newproduct',
     detailProduct: '/product/:id',
