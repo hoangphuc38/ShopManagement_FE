@@ -1,11 +1,14 @@
-import { useState } from 'react';
+import { useParams } from "react-router-dom";
+import { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faImage, faTrash } from '@fortawesome/free-solid-svg-icons';
 import assetAPI from '../../api/assetAPI';
 import productAPI from '../../api/productAPI';
 import { useNavigate } from 'react-router-dom';
 
-function NewProductScreen() {
+function DetailProductScreen() {
+    const { productId } = useParams();
+
     const [productName, setProductName] = useState('');
     const [productPrice, setProductPrice] = useState('');
     const [productImage, setProductImage] = useState(null);
@@ -16,6 +19,26 @@ function NewProductScreen() {
     // Handle changes in name and price input fields
     const handleNameChange = (e) => setProductName(e.target.value);
     const handlePriceChange = (e) => setProductPrice(e.target.value);
+
+    useEffect(() => {
+        const fetchAPI = async () => {
+            try {
+                let res = await productAPI.getProduct(productId);
+                setProductName(res.data.productName);
+                setProductPrice(res.data.price);
+                setProductImage(res.data.imageUrl);
+            } catch (error) {
+                console.error("Error fetching data: ", error);
+                if (error.response && error.response.status === 400) {
+                    alert(`Error: ${error.response.data.message}`);
+                } else {
+                    alert("An unexpected error occurred. Please try again later.");
+                }
+            }
+        };
+
+        fetchAPI();
+    }, []);
 
     // Handle image add
     const handleAddImage = async (e) => {
@@ -40,32 +63,39 @@ function NewProductScreen() {
 
     // Handle delete image
     const handleDeleteImage = async () => {
-        try {
-            const res = await assetAPI.deleteImage(publicId);
-            setProductImage(null); // Remove the image
-            alert(res.message);
-        }
-        catch (error) {
-            console.error('Image delete failed:', error);
-            if (error.response && error.response.status === 400) {
-                alert(`Error: ${error.response.data.message}`);
-            } else {
-                alert("An unexpected error occurred. Please try again later.");
+        if (publicId) {
+            try {
+                const res = await assetAPI.deleteImage(publicId);
+                setProductImage(null); // Remove the image
+                alert(res.message);
+            }
+            catch (error) {
+                console.error('Image delete failed:', error);
+                if (error.response && error.response.status === 400) {
+                    alert(`Error: ${error.response.data.message}`);
+                } else {
+                    alert("An unexpected error occurred. Please try again later.");
+                }
             }
         }
+        setProductImage(null);
     };
 
     // Handle form submit
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        console.log("name: ", productName);
+        console.log("price: ", productPrice);
+        console.log("image: ", productImage);
+
         try {
-            const res = await productAPI.addProduct(productName, productPrice, productImage);
+            const res = await productAPI.updateProduct(productId, productName, productPrice, productImage);
             navigate("/product");
             alert(res.message);
         }
         catch (error) {
-            console.error('Add product failed:', error);
+            console.error('Update product failed:', error);
             if (error.response && error.response.status === 400) {
                 alert(`Error: ${error.response.data.message}`);
             } else {
@@ -152,9 +182,9 @@ function NewProductScreen() {
                     {/* Submit button */}
                     <button
                         onClick={handleSubmit}
-                        className="mt-4 px-6 py-3 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                        className="mt-4 px-6 py-3 bg-[#1C6BA0] text-white rounded-md hover:bg-blue-600"
                     >
-                        Add Product
+                        Update Product
                     </button>
                 </div>
             </div>
@@ -162,4 +192,4 @@ function NewProductScreen() {
     );
 }
 
-export default NewProductScreen;
+export default DetailProductScreen;

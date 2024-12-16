@@ -12,10 +12,15 @@ export function Sidebar() {
     const { customerID, setCustomerID } = useContext(AppContext);
 
     const HandleLogout = async () => {
-        await authAPI.logout(customerID);
-        localStorage.removeItem("token");
-        setCustomerID(0);
-        navigate("/login");
+        try {
+            localStorage.removeItem("token");
+            await authAPI.logout(customerID);
+            setCustomerID(0);
+            navigate("/login");
+        }
+        catch (error) {
+            console.log("error: ", error);
+        }
     }
 
     return (

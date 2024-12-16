@@ -34,6 +34,26 @@ class ProductAPI {
 
         return axiosClient.get(url);
     }
+
+    getProduct = (productId) => {
+        const url = `product/${productId}`;
+        return axiosClient.get(url);
+    }
+
+    addProduct = (productName, price, imageUrl) => {
+        const url = 'product';
+        return axiosClient.post(url, { productName, price, imageUrl })
+    }
+
+    updateProduct = (productID, productName, price, imageUrl) => {
+        const url = `product/${productID}`;
+        return axiosClient.put(url, { productName, price, imageUrl })
+    }
+
+    deleteProduct = (productID) => {
+        const url = `product/${productID}`;
+        return axiosClient.delete(url);
+    }
 }
 
 const productAPI = new ProductAPI();

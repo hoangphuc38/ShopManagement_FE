@@ -7,7 +7,7 @@ import { AppContext } from "../../contexts/appContext";
 
 function LoginScreen() {
     const navigate = useNavigate();
-    const { setCustomerID } = useContext(AppContext);
+    const { setCustomerID, setCustomerName } = useContext(AppContext);
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -22,9 +22,16 @@ function LoginScreen() {
 
         try {
             let res = await authAPI.login(email, password);
+            console.log("check: ", res);
             localStorage.setItem("token", 'Bearer ' + res.data.token);
             setCustomerID(res.data.userID);
-            navigate('/product');
+            setCustomerName(res.data.fullName);
+
+            if (res.data.role === "admin") {
+                navigate('/product');
+            } else {
+                navigate('/customer/product');
+            }
         }
         catch (error) {
             if (error.response && error.response.status === 400) {
