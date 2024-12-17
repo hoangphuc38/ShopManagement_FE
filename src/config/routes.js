@@ -11,10 +11,10 @@ const routes = {
 
     //customer's screens
     productCustomer: '/customer/product',
+    shopCustomer: '/customer/shop',
     addShop: '/shop/newshop',
-    detailShop: '/shop/:shop_id',
-    addDetailShop: '/shop/:shop_id/newproduct',
-
+    detailShop: '/shop/:shopID',
+    addDetailShop: '/shop/:shopID/newproduct',
 }
 
 export default routes;

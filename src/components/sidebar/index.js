@@ -9,13 +9,19 @@ import { AppContext } from "../../contexts/appContext";
 
 export function Sidebar() {
     const navigate = useNavigate();
-    const { customerID, setCustomerID } = useContext(AppContext);
+    const { customerID, setCustomerID, setCustomerName } = useContext(AppContext);
 
     const HandleLogout = async () => {
         try {
             localStorage.removeItem("token");
+            localStorage.removeItem("customerID");
+            localStorage.removeItem("customerName");
+
             await authAPI.logout(customerID);
-            setCustomerID(0);
+
+            setCustomerID(null);
+            setCustomerName(null);
+
             navigate("/login");
         }
         catch (error) {

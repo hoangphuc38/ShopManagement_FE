@@ -9,7 +9,7 @@ import { HubConnectionBuilder } from '@microsoft/signalr';
 import notificationAPI from "../../api/notificationAPI";
 
 function Navbar() {
-    const { customerName, setCustomerID, customerID } = useContext(AppContext);
+    const { customerName, setCustomerID, customerID, setCustomerName } = useContext(AppContext);
 
     // State để quản lý tooltip thông báo
     const [isNotificationOpen, setIsNotificationOpen] = useState(false);
@@ -73,7 +73,12 @@ function Navbar() {
         try {
             await authAPI.logout(customerID);
             localStorage.removeItem("token");
-            setCustomerID(0);
+            localStorage.removeItem("customerID");
+            localStorage.removeItem("customerName");
+
+            setCustomerID(null);
+            setCustomerName(null);
+
             navigate("/login");
         }
         catch (error) {
@@ -86,12 +91,36 @@ function Navbar() {
         setIsNotificationOpen(!isNotificationOpen);
     };
 
+    const handleRead = async (id) => {
+        try {
+            await notificationAPI.markRead(id);
+
+            // Cập nhật trạng thái của thông báo trong state
+            setNotifications(prevNotifications => {
+                return prevNotifications.map(notification =>
+                    notification.notificationRecepientID === id ? { ...notification, isRead: true } : notification
+                );
+            });
+
+            // Giảm số lượng thông báo chưa đọc
+            setTotalUnread(prevUnread => prevUnread - 1);
+        }
+        catch (error) {
+            console.error("Error fetching data: ", error);
+            if (error.response && error.response.status === 400) {
+                alert(`Error: ${error.response.data.message}`);
+            } else {
+                alert("An unexpected error occurred. Please try again later.");
+            }
+        }
+    }
+
     return (
         <div className="flex items-center justify-between bg-[#1C6BA0] text-white py-4 px-8">
             {/* Left Side: Links */}
-            <div className="flex space-x-8">
-                <Link to="/product" className="hover:text-gray-200">Product</Link>
-                <Link to="/shop" className="hover:text-gray-200">Shop</Link>
+            <div className="flex space-x-8 font-bold">
+                <Link to="/customer/shop" className="hover:text-[#FFA500]">My Shop</Link>
+                <Link to="/customer/product" className="hover:text-[#FFA500]">Product</Link>
             </div>
 
             {/* Right Side: User Info */}
@@ -108,13 +137,21 @@ function Navbar() {
 
                     {/* Tooltip (Notification Dropdown) */}
                     {isNotificationOpen && (
-                        <div className="absolute right-0 mt-2 w-64 bg-white border rounded-lg shadow-md z-10">
-                            <div className="px-4 pt-2 pb-1 text-lg font-semibold text-gray-700">Notifications</div>
+                        <div className="absolute right-0 mt-2 w-72 bg-white border rounded-lg shadow-md z-10">
+                            <div className="px-4 pt-2 pb-1 text-base font-semibold text-gray-700">Notifications</div>
                             <div className="max-h-60 overflow-y-auto">
                                 {notifications.map(notification => (
-                                    <div key={notification.id} className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 cursor-pointer">
-                                        {notification.notificationContent.content}
-                                    </div>
+                                    notification.isRead ?
+                                        <div key={notification.notificationRecepientID}
+                                            className="px-4 py-2 text-xs text-gray-600 hover:bg-gray-100 cursor-pointer">
+                                            {notification.notificationContent.content}
+                                        </div>
+                                        :
+                                        <div key={notification.notificationRecepientID}
+                                            onClick={() => handleRead(notification.notificationRecepientID)}
+                                            className="px-4 py-2 text-xs font-bold text-gray-600 hover:bg-gray-100 cursor-pointer">
+                                            {notification.notificationContent.content}
+                                        </div>
                                 ))}
                             </div>
                         </div>

@@ -24,13 +24,16 @@ function LoginScreen() {
             let res = await authAPI.login(email, password);
             console.log("check: ", res);
             localStorage.setItem("token", 'Bearer ' + res.data.token);
+            localStorage.setItem("customerID", res.data.userID);
+            localStorage.setItem("customerName", res.data.fullName);
+
             setCustomerID(res.data.userID);
             setCustomerName(res.data.fullName);
 
             if (res.data.role === "admin") {
                 navigate('/product');
             } else {
-                navigate('/customer/product');
+                navigate('/customer/shop');
             }
         }
         catch (error) {
