@@ -26,6 +26,7 @@ function LoginScreen() {
             localStorage.setItem("token", 'Bearer ' + res.data.token);
             localStorage.setItem("customerID", res.data.userID);
             localStorage.setItem("customerName", res.data.fullName);
+            localStorage.setItem("refreshToken", res.data.refreshToken);
 
             setCustomerID(res.data.userID);
             setCustomerName(res.data.fullName);

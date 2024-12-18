@@ -15,6 +15,11 @@ class AuthAPI {
         const url = 'account/register';
         return axiosClient.post(url, { fullName, userName, password, address, role })
     }
+
+    refresh = (refreshToken) => {
+        const url = 'account/refresh-token';
+        return axiosClient.post(url, { refreshToken });
+    }
 }
 
 const authAPI = new AuthAPI();

@@ -75,6 +75,7 @@ function Navbar() {
             localStorage.removeItem("token");
             localStorage.removeItem("customerID");
             localStorage.removeItem("customerName");
+            localStorage.removeItem("refreshToken");
 
             setCustomerID(null);
             setCustomerName(null);

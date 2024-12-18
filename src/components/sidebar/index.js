@@ -16,6 +16,7 @@ export function Sidebar() {
             localStorage.removeItem("token");
             localStorage.removeItem("customerID");
             localStorage.removeItem("customerName");
+            localStorage.removeItem("refreshToken");
 
             await authAPI.logout(customerID);
 
@@ -52,7 +53,7 @@ export function Sidebar() {
             </div>
             <div className="absolute bottom-5 left-4 w-[90%]">
                 <ButtonSideBar title="Logout"
-                    onClick={HandleLogout}
+                    onClick={() => HandleLogout()}
                     to={config.routes.login}
                     icon={<FontAwesomeIcon icon={faDoorOpen} />} />
             </div>

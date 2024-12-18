@@ -1,6 +1,5 @@
 import axios from 'axios';
-
-let token = localStorage.getItem("token");
+import authAPI from './authAPI';
 
 const axiosClient = axios.create({
     baseURL: 'https://localhost:7125/api/',
@@ -30,7 +29,32 @@ axiosClient.interceptors.response.use((response) => {
     return response;
 }, (error) => {
     //Handle errors;
-    throw error;
+    const config = error?.config;
+
+    console.log("check: ", error?.response?.status);
+
+    if (error?.response?.status === 500 && !config?.sent) {
+        config.sent = true;
+        const refreshToken = localStorage.getItem("refreshToken");
+
+        try {
+            const result = authAPI.refresh(refreshToken);
+
+            if (result?.data.newAccessToken) {
+                config.headers = {
+                    ...config.headers,
+                    authorization: `Bearer ${result?.data.newAccessToken}`,
+                };
+            }
+
+            return config;
+        }
+        catch (error) {
+            return Promise.reject(error);
+        }
+    }
+
+    return Promise.reject(error);
 })
 
 export default axiosClient;
